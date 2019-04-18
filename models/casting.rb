@@ -1,3 +1,7 @@
+require_relative("../db/sql_runner")
+require_relative("movie")
+require_relative("star")
+
 class Casting
 
   attr_accessor :id, :movie_id, :star_id, :fee
@@ -15,5 +19,29 @@ class Casting
     casting = SqlRunner.run(sql, values).first
     @id = casting['id'].to_i
   end
+
+  def self.map_items(cast_data)
+    results = cast_data.map { |cast| Casting.new(cast)  }
+    return results
+  end
+
+  def self.all
+    sql = "SELECT * FROM castings"
+    castings = SqlRunner.run(sql)
+    self.map_items(castings)
+  end
+
+  def self.delete_all()
+    sql = "DELETE FROM castings"
+    SqlRunner.run(sql)
+  end
+
+  def update()
+    sql = "UPDATE castings SET (fee) = ($1) WHERE id = $2"
+    values = [@fee, @id]
+    SqlRunner.run(sql, values)
+  end
+
+
 
 end
